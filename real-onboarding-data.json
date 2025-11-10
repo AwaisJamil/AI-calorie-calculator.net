@@ -1,0 +1,103 @@
+{
+    "data": [
+        {
+            "id": 19,
+            "documentId": "vdmrjqnsrk3cczeydlqzaojq",
+            "data": {
+                "Goal": "Lose weight",
+                "Height (cm)": 170,
+                "Current Weight": "65.8 kg",
+                "Height (ft/in)": "5'7\"",
+                "What's Your Sex?": "Male",
+                "How active are you?": "Moderately Active",
+                "waht motivating you": "Vacation",
+                "Behaviour and Health": [
+                    "Eat more fruit and vegetables",
+                    "Make more mindful decisions about food"
+                ],
+                "Do you have children?": "Yes we live together",
+                "When is your birthday?": {
+                    "day": 1,
+                    "year": 2004,
+                    "month": 1
+                },
+                "What's Your main goal?": "Lose weight",
+                "What's the key to success?": "intrinsic willpower",
+                "What's your work schedule?": "I can choose my work hours freely ",
+                "What challenges did you face?": [
+                    "Resisting cravings",
+                    "Staying motivated"
+                ],
+                "Do you follow a specific diet?": "Classic",
+                "Why do you want to lose weight?": "To improve my overall health and fitness",
+                "How did you hear about Diet App?": "Instagram",
+                "when will this event take place?": "12/25/2025",
+                "How do you plan to stay on track?": [
+                    "I am going to meal prep and use recipes to plan ahead ",
+                    "I am going to see how long my tracking streak can get"
+                ],
+                "What would you like to be called?": "Muhammad Umar",
+                "You have ever counted calories before?": "Yes",
+                "How did you count calories in the past?": "Using pen and paper",
+                "Have you ever tried intermittent fasting?": "Yes but it wasn't for me",
+                "What are you most interested in tracking?": [
+                    "Calorie",
+                    "Minerals"
+                ],
+                "How do you plan to determine your progress?": "Document my weight regularly",
+                "Is there anything else you want to achieve?": [
+                    "Improve my relationship with food",
+                    "Learn how to cook healthily"
+                ],
+                "How do you feel about starting your journey?": "Motivated",
+                "Let's set the goal you're going to crush.": "60.0 kg",
+                "What experience do you have with losing weight?": "I've tried losing weight before and want to do it right this time",
+                "What will you do to increase your activity level?": [
+                    "Try new activities and sports",
+                    "Reach a daily step goal"
+                ],
+                "What caused you to gain weight in the past?": "Slower metabolism",
+                "Challenge time! How many days in a row can you track?": "50 days in a row (Upstoppable)",
+                "On which days would you like to eat a little bit more?": "Saturdays and Sundays",
+                "How many minutes per day do you want to use DietApp.com?": "5 min / day (Casual)",
+                "What would help you stay motivated in case of a setback?": "Having supportive people around me",
+                "Just one more thing: Do you eat a bit more on the weekend?": "Yes",
+                "How do you plan on staying consistence to create your new habits?": "Log a meal before eating it",
+                "What usually makes you want to eat even though you're are not hungry?": "Being around food ",
+                "You have many great achievements ahead of you. How will you celebrate them?": [
+                    "Go on a trip",
+                    "Buy new clothes"
+                ],
+                "Think back to your last weight-\nloss journey. Has anything changed\nsince then?": "No",
+                "How would you describe the eating habits of the people you spend the most time with?": "They eat healthy on a regular basis",
+                "Imagine you've just reached your goal. What is your future self most excited about!": "Living healthier and having more energy",
+                "Is it more difficult for you to make healthy choices on weekends and special occasions?": "Yes",
+                "Last time you counted calories, did you find it difficult to stick to your daily calories goal?": "Yes"
+            },
+            "createdAt": "2025-10-27T07:15:25.588Z",
+            "updatedAt": "2025-10-31T11:27:03.045Z",
+            "publishedAt": "2025-10-27T07:15:25.578Z",
+            "locale": null,
+            "user": {
+                "id": 46,
+                "documentId": "oaa6jlsd9m1hgmitq3cmhf8w",
+                "username": "chumar111",
+                "email": "chumar111@gmail.com",
+                "provider": "local",
+                "password": "$2a$10$vcfeiE8dkmmwxUBVYF01p.ZlfOd9pRqMbmFSM8DtNvSCXtZFsiQK2",
+                "resetPasswordToken": null,
+                "confirmationToken": null,
+                "confirmed": true,
+                "blocked": false,
+                "createdAt": "2025-10-27T07:15:24.801Z",
+                "updatedAt": "2025-10-31T12:20:58.467Z",
+                "publishedAt": "2025-10-27T07:15:24.801Z",
+                "locale": null,
+                "firstName": "Muhammad Umar",
+                "lastName": "Rauf",
+                "resetOtp": null,
+                "resetOtpExpiry": null
+            }
+        }
+    ]
+}
