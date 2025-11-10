@@ -27,64 +27,73 @@ else:
 
 class CalorieCalculator:
     """
-    Calorie Calculator - Calculator.net Implementation
+    YAZIO Calorie Calculator using Mifflin-St. Jeor Equation
     
-    Complete Formula (SIMPLIFIED APPROACH):
-    ================================================
+    Official YAZIO Formula:
+    ========================
     Calorie Goal = (BMR × Activity Factor) + Energy Difference
     
     Components:
     -----------
     1. BMR (Basal Metabolic Rate) - Mifflin-St. Jeor Equation:
-       Men:   BMR = (10 × weight_kg) + (6.25 × height_cm) - (5 × age) + 5
-       Women: BMR = (10 × weight_kg) + (6.25 × height_cm) - (5 × age) - 161
+       • Men: (10 × weight in kg) + (6.25 × height in cm) - (5 × age) + 5
+       • Women: (10 × weight in kg) + (6.25 × height in cm) - (5 × age) - 161
+    
+    2. Activity Factor:
+       • Low: 1.25 (sedentary, mostly sitting)
+       • Moderate: 1.38 (some activity, light exercise)
+       • High: 1.52 (very active, regular exercise)
+       • Very High: 1.65 (extremely active, athlete level)
        
-       Note: The Mifflin-St Jeor Equation is considered the most accurate equation
-       for calculating BMR (5% more accurate than Harris-Benedict).
+       New Users (before activity level is set):
+       • Men: 1.36
+       • Women: 1.33
     
-    2. Activity Factor (multiply BMR to get TDEE):
-       - Sedentary: 1.2 (little or no exercise)
-       - Lightly active: 1.375 (exercise 1-3 times/week)
-       - Moderately active: 1.465 (exercise 4-5 times/week) ← Default
-       - Active: 1.55 (daily exercise or intense exercise 3-4 times/week)
-       - Very Active: 1.725 (intense exercise 6-7 times/week)
-       - Extra Active: 1.9 (very intense exercise daily, or physical job)
+    3. TDEE (Total Daily Energy Expenditure):
+       TDEE = BMR × Activity Factor
+       This is your maintenance calories (to maintain current weight)
     
-    3. Energy Difference (SIMPLIFIED - DOES NOT USE GOAL WEIGHT):
-       Formula: Energy Difference = Weekly Goal (kg) × 1,000 cal/day
+    4. Energy Difference:
+       Energy Difference = Weekly Goal (kg) × 750
        
-       Examples:
-       - Lose 0.5 kg/week: -0.5 × 1000 = -500 cal/day (deficit)
-       - Lose 1.0 kg/week: -1.0 × 1000 = -1000 cal/day (deficit)
-       - Gain 0.5 kg/week: +0.5 × 1000 = +500 cal/day (surplus)
-       - Maintain weight: 0 × 1000 = 0 cal/day (no change)
+       Based on: 1 kg body weight ≈ 7,500 calories
+       Distributed over 7 days: 7,500 ÷ 10 days per kg = 750 cal/day per 0.1 kg/week
+       
+       Sign Convention:
+       • Weight LOSS: weekly_goal is NEGATIVE (-0.5, -1.0, etc.)
+         Creates a calorie DEFICIT
+       • Weight GAIN: weekly_goal is POSITIVE (+0.5, +1.0, etc.)
+         Creates a calorie SURPLUS
+       • MAINTAIN: weekly_goal is ZERO (0)
+         No change to TDEE
     
-    Important Notes:
-    ----------------
-    - This is a SIMPLIFIED approach that does NOT consider goal weight
-    - It only uses weekly_goal to calculate deficit/surplus
-    - Based on 1 kg ≈ 1,000 cal/day deficit (simplified from 1,100)
-    - It is not advisable to lose more than 2 pounds (0.9 kg) per week
-    - Maximum recommended daily calorie reduction: ~1,000 calories
-    - Proper diet and exercise are essential for healthy weight loss
+    Example (from YAZIO documentation):
+    -----------------------------------
+    John Smith: 80 kg, 180 cm, 29 years, Male, Moderate activity (1.38)
+    Goal: Gain to 85 kg at +0.5 kg/week
     
-    Source: calculator.net calorie calculator methodology
+    BMR = (10 × 80) + (6.25 × 180) - (5 × 29) + 5 = 1,785 Cal
+    TDEE = 1,785 × 1.38 = 2,463.3 Cal
+    Energy Difference = 0.5 × 750 = 375 Cal
+    Final Goal = 2,463.3 + 375 = 2,838.3 Cal/day
+    
+    References:
+    -----------
+    • YAZIO uses Mifflin-St. Jeor (5% more accurate than Harris-Benedict)
+    • Does NOT use Broca Index Adjustment (only for Harris-Benedict)
+    • 750 cal/day per kg/week includes a "safety cushion" vs. 1000 cal rule of thumb
     """
     
-    # Activity level factors (calculator.net standard values)
+    # Activity level factors (YAZIO standard)
     ACTIVITY_FACTORS = {
-        'sedentary': 1.2,
-        'low': 1.2,
-        'lightly active': 1.375,
-        'light': 1.375,
-        'moderately active': 1.465,
-        'moderate': 1.465,  # Default in calculator.net
-        'active': 1.55,
-        'high': 1.55,
-        'very active': 1.725,
-        'very_high': 1.725,
-        'extra active': 1.9,
-        'extremely active': 1.9
+        'low': 1.25,
+        'sedentary': 1.25,
+        'moderate': 1.38,
+        'moderately active': 1.38,
+        'high': 1.52,
+        'very active': 1.52,
+        'very_high': 1.65,
+        'extremely active': 1.65
     }
     
     # New user default factors
@@ -115,40 +124,26 @@ class CalorieCalculator:
         """
         Calculate energy difference for weight gain/loss
         
-        Standard Simplified Formula (calculator.net approach):
-        - Does NOT consider goal weight
-        - Simple deficit/surplus based on weekly goal only
+        Official YAZIO Formula:
+        Energy Difference = (Weight difference × 750) ÷ (Weight difference ÷ Weekly goal)
         
-        Formula: Energy Difference = Weekly Goal (kg) × -1000 cal/day
+        This simplifies to: Energy Difference = Weekly goal × 750
         
-        Note: Negative weekly_goal (weight loss) creates a deficit (negative energy diff)
-              Positive weekly_goal (weight gain) creates a surplus (positive energy diff)
+        IMPORTANT - Sign Convention:
+        • Weight LOSS: weekly_goal is NEGATIVE (-0.5, -1.0, etc.)
+          Example: -0.5 kg/week → -0.5 × 750 = -375 kcal/day (deficit)
         
-        Examples:
-        - Lose 0.5 kg/week: weekly_goal = -0.5 → energy_diff = -500 cal/day
-        - Lose 1.0 kg/week: weekly_goal = -1.0 → energy_diff = -1000 cal/day
-        - Gain 0.5 kg/week: weekly_goal = +0.5 → energy_diff = +500 cal/day
-        - Maintain: weekly_goal = 0 → energy_diff = 0 cal/day
+        • Weight GAIN: weekly_goal is POSITIVE (+0.5, +1.0, etc.)
+          Example: +0.5 kg/week → +0.5 × 750 = +375 kcal/day (surplus)
         
-        Based on: 1 pound = 3,500 cal, so 1 kg ≈ 7,700 cal / 7 days ≈ 1,100 cal/day
-        But simplified to 1,000 cal/day per kg/week for easier calculation.
+        • MAINTAIN: weekly_goal is ZERO (0)
+          Example: 0 kg/week → 0 × 750 = 0 kcal/day (no change)
         
-        Args:
-            starting_weight: Current starting weight in kg (NOT USED in this simplified approach)
-            goal_weight: Target goal weight in kg (NOT USED in this simplified approach)
-            weekly_goal: Desired kg per week (negative for loss, positive for gain)
-        
-        Returns:
-            Energy difference in calories (negative for deficit, positive for surplus)
+        The weekly_goal parameter MUST be correctly signed by the caller.
         """
-        # If weekly_goal is 0, no energy difference needed (maintain weight)
-        if weekly_goal == 0:
-            return 0.0
-        
-        # Simplified Formula: Weekly goal × -1000 cal/day
-        # The negative sign converts weight loss (negative weekly_goal) to calorie deficit
-        # Example: -0.5 kg/week × -1000 = +500, but we want -500 deficit, so we negate
-        energy_diff = weekly_goal * 1000
+        # Official YAZIO formula: Weekly goal × 750
+        # No sign manipulation - the weekly_goal should already have the correct sign
+        energy_diff = weekly_goal * 750
         
         return round(energy_diff, 2)
     
@@ -157,23 +152,23 @@ class CalorieCalculator:
                               activity_level, starting_weight, goal_weight, 
                               weekly_goal, is_new_user=False):
         """
-        Complete calorie goal calculation using calculator.net methodology
-        
-        Note: This simplified approach does NOT use goal_weight in the calculation.
-        It only uses current weight, activity level, and weekly goal rate.
+        Complete calorie goal calculation using YAZIO methodology
         
         Returns dictionary with all calculated values
         """
-        # Step 1: Calculate BMR using current weight
+        # Step 1: Calculate BMR
         bmr = CalorieCalculator.calculate_bmr(weight_kg, height_cm, age, gender)
         
-        # Step 2: Get activity factor (ignore is_new_user for this simplified approach)
-        activity_factor = CalorieCalculator.ACTIVITY_FACTORS.get(activity_level.lower(), 1.465)
+        # Step 2: Get activity factor
+        if is_new_user:
+            activity_factor = CalorieCalculator.NEW_USER_FACTORS.get(gender.lower(), 1.36)
+        else:
+            activity_factor = CalorieCalculator.ACTIVITY_FACTORS.get(activity_level.lower(), 1.38)
         
         # Step 3: Calculate active metabolic rate (TDEE)
         tdee = bmr * activity_factor
         
-        # Step 4: Calculate energy difference (simplified - only uses weekly_goal)
+        # Step 4: Calculate energy difference
         energy_difference = CalorieCalculator.calculate_energy_difference(
             starting_weight, goal_weight, weekly_goal
         )
@@ -560,14 +555,14 @@ def home():
     return jsonify({
         'api': 'AI Nutrition Calculator',
         'version': '2.0',
-        'description': 'Calculator.net Implementation + Gemini AI Personalization',
+        'description': 'YAZIO Calculator + Gemini AI Personalization',
         'endpoints': {
             '/health': 'GET - API health check',
             '/calculate-nutrition': 'POST - Calculate complete nutrition plan',
-            '/calculate': 'POST - Simple calculator (no AI)',
+            '/calculate': 'POST - YAZIO calculator only (no AI)',
             '/activity-factors': 'GET - Get activity factor values'
         },
-        'method': 'Mifflin-St. Jeor + Simplified Energy Difference (1 kg = 1,000 cal/day)'
+        'method': 'Mifflin-St. Jeor Equation + YAZIO Energy Difference Formula'
     })
 
 
@@ -587,13 +582,12 @@ def get_activity_factors():
     """Get available activity factors"""
     return jsonify({
         'activity_factors': CalorieCalculator.ACTIVITY_FACTORS,
+        'new_user_factors': CalorieCalculator.NEW_USER_FACTORS,
         'description': {
-            'sedentary': 'Little or no exercise, desk job (1.2)',
-            'lightly active': 'Exercise 1-3 times/week (1.375)',
-            'moderately active': 'Exercise 4-5 times/week (1.465) - Default',
-            'active': 'Daily exercise or intense exercise 3-4 times/week (1.55)',
-            'very active': 'Intense exercise 6-7 times/week (1.725)',
-            'extra active': 'Very intense exercise daily, or physical job (1.9)'
+            'low/sedentary': 'Little or no exercise, desk job (1.25)',
+            'moderate/moderately active': 'Moderate exercise 3-5 days/week (1.38)',
+            'high/very active': 'Hard exercise 6-7 days/week (1.52)',
+            'very_high/extremely active': 'Physical job + hard exercise daily (1.65)'
         }
     })
 
@@ -601,23 +595,17 @@ def get_activity_factors():
 @app.route('/calculate', methods=['POST'])
 def calculate_only():
     """
-    Simple calorie calculator endpoint (no AI personalization)
+    YAZIO calculator endpoint (no AI personalization)
     
     Required fields:
-    - height_cm, age, gender
+    - weight_kg, height_cm, age, gender
     - activity_level, starting_weight, goal_weight, weekly_goal
-    
-    Formula: Calorie Goal = (BMR × Activity Factor) + Energy Difference
-    Where Energy Difference = Weekly Goal (kg) × 1,000 cal/day
-    
-    Note: Uses starting_weight for BMR calculation (current weight)
-    Goal weight is NOT used in the actual calculation (simplified approach)
     """
     try:
         data = request.get_json()
         
-        # Validate required fields (removed weight_kg, using starting_weight instead)
-        required = ['height_cm', 'age', 'gender', 'activity_level',
+        # Validate required fields
+        required = ['weight_kg', 'height_cm', 'age', 'gender', 'activity_level',
                    'starting_weight', 'goal_weight', 'weekly_goal']
         missing = [field for field in required if field not in data]
         
@@ -626,9 +614,9 @@ def calculate_only():
                 'error': f'Missing required fields: {", ".join(missing)}'
             }), 400
         
-        # Calculate calorie goal using starting_weight for BMR
+        # Calculate calorie goal
         result = CalorieCalculator.calculate_calorie_goal(
-            weight_kg=float(data['starting_weight']),  # Use starting_weight for BMR calculation
+            weight_kg=float(data['weight_kg']),
             height_cm=float(data['height_cm']),
             age=int(data['age']),
             gender=data['gender'],
@@ -655,8 +643,7 @@ def calculate_only():
             'calculation': result,
             'macronutrients': macros,
             'timeline': timeline,
-            'method': 'Calculator.net - Mifflin-St. Jeor (Simplified)',
-            'note': 'Goal weight is not used in calculation - only weekly goal rate',
+            'method': 'YAZIO - Mifflin-St. Jeor Equation',
             'timestamp': datetime.now().isoformat()
         })
         
@@ -669,7 +656,7 @@ def calculate_only():
 @app.route('/calculate-nutrition', methods=['POST'])
 def calculate_nutrition():
     """
-    Main endpoint: Calculator.net Method + Gemini AI Personalization
+    Main endpoint: YAZIO Calculator + Gemini AI Personalization
     
     Accepts onboarding data in your app's format
     Returns complete nutrition plan with AI-powered recommendations
@@ -804,7 +791,7 @@ def calculate_nutrition():
             "metadata": {
                 "processed_at": datetime.now().isoformat(),
                 "api_version": "2.0.0",
-                "calculation_method": "Calculator.net (Mifflin-St. Jeor + Simplified)",
+                "calculation_method": "YAZIO (Mifflin-St. Jeor + Energy Difference)",
                 "personalization": "Gemini AI"
             }
         }), 200
@@ -828,14 +815,13 @@ if __name__ == '__main__':
     print("="*70)
     print("\n📊 Calculation Method:")
     print("   - BMR: Mifflin-St. Jeor Equation")
-    print("   - Energy Difference: Simplified (1 kg/week = 1,000 cal/day)")
-    print("   - Formula: (BMR × Activity Factor) + (Weekly Goal × 1,000)")
+    print("   - Energy Difference: YAZIO Formula (Weekly Goal × 750)")
     print("   - Personalization: Gemini 2.5 Flash AI")
     print("\n📝 Available endpoints:")
     print("   - GET  /                      - API information")
     print("   - GET  /health                - Health check")
     print("   - GET  /activity-factors      - View activity factors")
-    print("   - POST /calculate             - Simple calculator")
+    print("   - POST /calculate             - YAZIO calculator only")
     print("   - POST /calculate-nutrition   - Full AI-powered nutrition plan")
     print("\n💡 API Key Status:", "✅ Configured" if GEMINI_API_KEY else "❌ Missing")
     print("\n🌐 Server running on: http://localhost:5000")

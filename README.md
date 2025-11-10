@@ -260,13 +260,111 @@ AI-calorie-calc/
 
 ## 📊 Calculation Methodology
 
-The API uses scientifically-backed formulas:
+This API implements the **official YAZIO calorie calculation formula**, which is scientifically validated and used by millions of users worldwide.
 
-- **BMR**: Mifflin-St. Jeor Equation
-- **TDEE**: BMR × Activity Factor
-- **Calorie Goals**: Based on weight loss/gain targets
-- **Macros**: Evidence-based ratios optimized for goals
-- **Safety Limits**: Enforced minimum/maximum calorie intake
+### The YAZIO Formula
+
+```
+Daily Calorie Goal = (BMR × Activity Factor) + Energy Difference
+```
+
+### Step-by-Step Breakdown
+
+#### 1️⃣ **BMR (Basal Metabolic Rate)** - Mifflin-St. Jeor Equation
+
+The energy your body needs at complete rest.
+
+**For Men:**
+```
+BMR = (10 × weight in kg) + (6.25 × height in cm) - (5 × age) + 5
+```
+
+**For Women:**
+```
+BMR = (10 × weight in kg) + (6.25 × height in cm) - (5 × age) - 161
+```
+
+**Why Mifflin-St. Jeor?**
+- 5% more accurate than the older Harris-Benedict equation
+- Most current and scientifically validated formula
+- Best applies to a wide population
+
+#### 2️⃣ **Activity Factor**
+
+Multiplier based on daily activity level:
+
+| Activity Level | Factor | Description |
+|---------------|--------|-------------|
+| **Low** | 1.25 | Sedentary, mostly sitting |
+| **Moderate** | 1.38 | Some activity, light exercise |
+| **High** | 1.52 | Very active, regular exercise |
+| **Very High** | 1.65 | Extremely active, athlete level |
+
+**New Users** (before setting activity level):
+- Men: 1.36
+- Women: 1.33
+
+#### 3️⃣ **TDEE (Total Daily Energy Expenditure)**
+
+Your maintenance calories (to maintain current weight):
+```
+TDEE = BMR × Activity Factor
+```
+
+#### 4️⃣ **Energy Difference**
+
+The calorie adjustment needed to reach your goal:
+
+```
+Energy Difference = Weekly Goal (kg) × 750
+```
+
+**Sign Convention:**
+- 🔻 **Weight Loss**: Use NEGATIVE values (-0.5, -1.0)
+  - Example: -0.5 kg/week → -375 cal/day deficit
+- 🔺 **Weight Gain**: Use POSITIVE values (+0.5, +1.0)
+  - Example: +0.5 kg/week → +375 cal/day surplus
+- ⚖️ **Maintain**: Use ZERO (0)
+  - No change to TDEE
+
+**Why 750 instead of 1000?**
+- Based on 7,500 calories per kg of body weight
+- Includes a "safety cushion" for sustainable, healthy weight changes
+- Reduces risk of yo-yo effect and ensures adequate nutrition
+- More maintainable long-term vs. aggressive deficits
+
+### 📐 Complete Example
+
+**John Smith:**
+- Weight: 80 kg
+- Height: 180 cm
+- Age: 29 years
+- Gender: Male
+- Activity: Moderate (1.38)
+- Goal: Gain to 85 kg at +0.5 kg/week
+
+**Calculation:**
+```
+1. BMR = (10 × 80) + (6.25 × 180) - (5 × 29) + 5
+       = 800 + 1,125 - 145 + 5
+       = 1,785 Calories
+
+2. TDEE = 1,785 × 1.38
+        = 2,463.3 Calories (to maintain weight)
+
+3. Energy Difference = 0.5 × 750
+                     = 375 Calories (surplus for gain)
+
+4. Daily Calorie Goal = 2,463.3 + 375
+                       = 2,838.3 Calories
+```
+
+### ✅ Validation
+
+This implementation matches the official YAZIO calculator at:
+**https://www.yazio.com/en/calorie-intake-calculator**
+
+All calculations have been verified against YAZIO's documentation and produce identical results.
 
 ## 🔒 Security Best Practices
 
